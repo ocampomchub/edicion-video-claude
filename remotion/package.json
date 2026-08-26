@@ -1,0 +1,22 @@
+{
+  "name": "video-pipeline-remotion",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "render:subtitles": "remotion render src/index.ts Subtitles ../work/subtitles_overlay.mov --props=../work/subtitles_schedule.final.json --codec=prores --prores-profile=4444",
+    "render:graphics": "remotion render src/index.ts Graphics ../work/graphics_overlay.mov --props=../work/graphics_schedule.final.json --codec=prores --prores-profile=4444",
+    "studio": "remotion studio src/index.ts"
+  },
+  "dependencies": {
+    "remotion": "^4.0.190",
+    "@remotion/cli": "^4.0.190",
+    "@remotion/google-fonts": "^4.0.190",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "@types/react": "^18.3.3"
+  }
+}

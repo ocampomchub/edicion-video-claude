@@ -1,0 +1,21 @@
+# Artefactos generados por el pipeline (se regeneran corriendo el CLI)
+/work/*
+!/work/.gitkeep
+/output/*
+!/output/.gitkeep
+/luts/*.cube
+/sfx/*.wav
+/music/*.wav
+/music/_segments/
+
+# Node / Remotion
+/remotion/node_modules/
+/remotion/out/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Sistema
+.DS_Store
