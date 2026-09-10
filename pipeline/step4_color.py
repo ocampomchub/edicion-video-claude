@@ -110,13 +110,12 @@ def _export_preview(src_clean: Path, src_graded: Path, timestamp: float, dst: Pa
     utils.extract_frame_png(src_clean, timestamp, before_png)
     utils.extract_frame_png(src_graded, timestamp, after_png)
 
+    # Sin drawtext a propósito: requiere ffmpeg compilado con libfreetype, y no todos
+    # los builds de Homebrew lo traen. Izquierda = antes, derecha = después.
     cmd = [
         "ffmpeg", "-y",
         "-i", str(before_png), "-i", str(after_png),
-        "-filter_complex",
-        "[0:v]drawtext=text='ANTES':fontcolor=white:fontsize=48:x=20:y=20:box=1:boxcolor=black@0.5[a];"
-        "[1:v]drawtext=text='DESPUÉS':fontcolor=white:fontsize=48:x=20:y=20:box=1:boxcolor=black@0.5[b];"
-        "[a][b]hstack=inputs=2[out]",
+        "-filter_complex", "[0:v][1:v]hstack=inputs=2[out]",
         "-map", "[out]", "-frames:v", "1",
         str(dst),
     ]
