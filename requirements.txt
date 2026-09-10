@@ -1,15 +1,20 @@
+# Requiere Python 3.11 o 3.12. mlx-whisper depende de numba, que suele tardar meses
+# en publicar wheels para versiones de Python recién salidas (3.13/3.14 aún no
+# funcionan bien al escribir esto) — usa un Python algo más antiguo para este venv.
+
 # Núcleo del pipeline (multiplataforma)
 numpy>=1.26
 
 # Transcripción (PASO 1) — requiere Apple Silicon.
 mlx-whisper>=0.4
 
-# Música (PASO 10) — requiere Apple Silicon. El nombre exacto del paquete varía según
-# el fork/versión de musicgen-mlx que instales; si `pip install musicgen-mlx` no
-# resuelve, instala desde el repo que estés usando y revisa
-# pipeline/musicgen_backend.py (la función _try_python_api documenta qué API espera).
-musicgen-mlx>=0.1 ; sys_platform == "darwin"
-
 # Detección de rostro para centrar los punch-ins (PASO 5). Opcional: si no está
 # instalado, el pipeline usa un encuadre por defecto (centro-superior) y avisa.
 opencv-python-headless>=4.9
+
+# Música (PASO 10) — requiere Apple Silicon. NO está en PyPI: no lo instales con pip
+# desde este archivo. Instálalo aparte, con el venv de este proyecto activado:
+#   git clone https://github.com/andrade0/musicgen-mlx.git ~/musicgen-mlx-src
+#   cd ~/musicgen-mlx-src && make install
+# Expone el paquete `audiocraft_mlx` (y el CLI `musicgen-mlx` si el Makefile registra
+# el entry point) — ver pipeline/musicgen_backend.py para el detalle exacto de la API.

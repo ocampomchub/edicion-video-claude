@@ -17,20 +17,33 @@ verificación en máquina** antes de confiar en él para un vídeo real.
 ## Instalación (macOS, Apple Silicon)
 
 ```bash
-# Python
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-
 # ffmpeg y sox (SFX se sintetizan con numpy, pero ffmpeg hace falta para todo lo demás)
 brew install ffmpeg sox
+
+# Python 3.11 — mlx-whisper depende de numba, que suele tardar en soportar versiones
+# de Python muy recientes (3.13/3.14 dan error al instalar). Usa 3.11 para este venv
+# aunque tengas una versión más nueva como Python por defecto del sistema.
+brew install python@3.11
+python3.11 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
 
 # Remotion (subtítulos y gráficos quemados)
 cd remotion && npm install && cd ..
 ```
 
-`mlx-whisper` y `musicgen-mlx` (PASOS 1 y 10) requieren Apple Silicon. Si tu versión
-de `musicgen-mlx` expone una API distinta a la que asume
-`pipeline/musicgen_backend.py`, ajusta esa función — está documentado ahí mismo.
+`mlx-whisper` (PASO 1) requiere Apple Silicon y está en `requirements.txt`.
+`musicgen-mlx` (PASO 10) también requiere Apple Silicon pero **no está en PyPI** —
+instálalo aparte, con el venv de arriba ya activado:
+
+```bash
+git clone https://github.com/andrade0/musicgen-mlx.git ~/musicgen-mlx-src
+cd ~/musicgen-mlx-src && make install
+cd -
+```
+
+Eso deja disponible el paquete `audiocraft_mlx` dentro de tu `.venv`. Si tu versión
+expone una API distinta a la que asume `pipeline/musicgen_backend.py`, ajusta ese
+archivo — está documentado ahí mismo.
 
 ## Uso
 
