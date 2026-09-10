@@ -9,8 +9,9 @@ numpy>=1.26
 mlx-whisper>=0.4
 
 # Detección de rostro para centrar los punch-ins (PASO 5). Opcional: si no está
-# instalado, el pipeline usa un encuadre por defecto (centro-superior) y avisa.
-opencv-python-headless>=4.9
+# instalado (o falla), el pipeline usa un encuadre por defecto y avisa.
+# Fijado a la serie 4.x: la 5.0 (recién salida) rompe cv2.CascadeClassifier.
+opencv-python-headless>=4.9,<5
 
 # Música (PASO 10) — requiere Apple Silicon. NO está en PyPI: no lo instales con pip
 # desde este archivo. Instálalo aparte, con el venv de este proyecto activado:

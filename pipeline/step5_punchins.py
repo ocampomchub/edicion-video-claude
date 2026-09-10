@@ -20,21 +20,28 @@ def _detect_face_center(frame_path: Path) -> tuple[float, float] | None:
         import cv2
     except ImportError:
         return None
-    img = cv2.imread(str(frame_path))
-    if img is None:
+    try:
+        img = cv2.imread(str(frame_path))
+        if img is None:
+            return None
+        cascade_path = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+        cascade = cv2.CascadeClassifier(cascade_path)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        faces = cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(60, 60))
+        if len(faces) == 0:
+            return None
+        # la cara más grande = sujeto principal
+        x, y, w, h = max(faces, key=lambda f: f[2] * f[3])
+        h_img, w_img = img.shape[:2]
+        fx = (x + w / 2) / w_img
+        fy = (y + h / 2) / h_img
+        return fx, fy
+    except Exception as e:
+        # La detección de rostro es opcional por diseño: si el build de OpenCV
+        # instalado no la soporta (o falla por lo que sea), caemos al encuadre
+        # por defecto en vez de tumbar todo el PASO 5.
+        print(f"Aviso: detección de rostro falló ({e}); uso encuadre por defecto.")
         return None
-    cascade_path = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
-    cascade = cv2.CascadeClassifier(cascade_path)
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    faces = cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(60, 60))
-    if len(faces) == 0:
-        return None
-    # la cara más grande = sujeto principal
-    x, y, w, h = max(faces, key=lambda f: f[2] * f[3])
-    h_img, w_img = img.shape[:2]
-    fx = (x + w / 2) / w_img
-    fy = (y + h / 2) / h_img
-    return fx, fy
 
 
 def _face_center_at(video_path: Path, timestamp: float) -> tuple[float, float]:
