@@ -57,6 +57,18 @@ def ffprobe_fps(path: Path) -> float:
     return float(num) / float(den)
 
 
+def ffprobe_dimensions(path: Path) -> tuple[int, int]:
+    require_binary("ffprobe")
+    cmd = [
+        "ffprobe", "-v", "error", "-select_streams", "v:0",
+        "-show_entries", "stream=width,height", "-of", "csv=s=x:p=0",
+        str(path),
+    ]
+    proc = run(cmd)
+    w, h = proc.stdout.strip().split("x")
+    return int(w), int(h)
+
+
 def extract_audio_wav(src: Path, dst: Path, sample_rate: int = 16000) -> None:
     require_binary("ffmpeg")
     dst.parent.mkdir(parents=True, exist_ok=True)

@@ -115,7 +115,7 @@ def build_camera_moves(retention_map: dict, video_path: Path) -> list[dict]:
     return moves
 
 
-def _zoompan_filter(move: dict, fps: float) -> str:
+def _zoompan_filter(move: dict, fps: float, width: int, height: int) -> str:
     ramp_frames = max(1, round(move["ramp_duration"] * fps))
     zoom_target = move["zoom"]
 
@@ -133,7 +133,7 @@ def _zoompan_filter(move: dict, fps: float) -> str:
 
     return (
         f"zoompan=z='{zoom_expr}':x='{x_expr}':y='{y_expr}':"
-        f"d=1:s=iw:ih:fps={fps}"
+        f"d=1:s={width}x{height}:fps={fps}"
     )
 
 
@@ -141,6 +141,7 @@ def _apply_moves(src: Path, moves: list[dict], dst: Path) -> None:
     utils.require_binary("ffmpeg")
     duration = utils.ffprobe_duration(src)
     fps = utils.ffprobe_fps(src)
+    width, height = utils.ffprobe_dimensions(src)
 
     if not moves:
         cmd = ["ffmpeg", "-y", "-i", str(src), "-c", "copy", str(dst)]
@@ -162,7 +163,7 @@ def _apply_moves(src: Path, moves: list[dict], dst: Path) -> None:
         move = next((m for m in moves if abs(m["start"] - seg_start) < 0.01), None)
         vf = f"[0:v]trim=start={seg_start:.3f}:end={seg_end:.3f},setpts=PTS-STARTPTS"
         if move:
-            vf += f",{_zoompan_filter(move, fps)}"
+            vf += f",{_zoompan_filter(move, fps, width, height)}"
         vf += f"[v{i}]"
         filter_parts.append(vf)
         filter_parts.append(
